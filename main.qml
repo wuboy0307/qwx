@@ -43,8 +43,8 @@ import QtQuick.Controls 1.1
 import "content"
 
 ApplicationWindow {
-    width: 800
-    height: 1280
+    width: 400
+    height: 650
 
     Rectangle {
         color: "#212126"
@@ -90,11 +90,23 @@ ApplicationWindow {
                 onClicked: stackView.pop()
             }
         }
+        
+        Rectangle {
+            id: avatar
+            x: backButton.x + backButton.width
+            anchors.verticalCenter: parent.verticalCenter
+            width: 85
+            height: 67
+            color: "transparent"
+            BorderImage {
+                source: "images/sirtoozee.jpg"
+            }
+        }
 
         Text {
             font.pixelSize: 42
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-            x: backButton.x + backButton.width + 20
+            x: avatar.x + avatar.width
             anchors.verticalCenter: parent.verticalCenter
             color: "white"
             text: "涩兔子"
