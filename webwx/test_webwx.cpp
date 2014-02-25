@@ -21,8 +21,11 @@
 
 int main(int argc, char* argv[]) 
 {
+    std::string uuid;
     try {
-        std::cout << webwx::get_uuid() << std::endl;
+        uuid = webwx::get_uuid();
+        std::cout << "获取uuid: " << uuid << std::endl;
+        std::cout << "获取二维码https://login.weixin.qq.com/qrcode/" + uuid + "?t=webwx" << std::endl;
     } catch (std::string ex) {
         std::cout << ex << std::endl;
     }

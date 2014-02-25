@@ -25,6 +25,7 @@ namespace webwx
 {
 
 std::string get_uuid();
+bool wait_scan();
 
 }
 
