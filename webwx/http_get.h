@@ -19,24 +19,16 @@
 #ifndef HTTP_GET_H
 #define HTTP_GET_H
 
-#include <string>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-namespace webwx 
-{
+#define BUFFER_SIZE 1024
 
-class chunk
-{ 
-public:
-    static size_t handle(char* data, size_t size, size_t nmemb, void* p);
-    std::string get_content();
+char *http_get(char *url);
 
-private:
-    std::string m_content;
-    size_t m_handle_impl(char* data, size_t size, size_t nmemb);
-};
-
-std::string http_get(std::string url);
-
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* HTTP_GET_H */

@@ -1,5 +1,5 @@
 /*                                                                              
- * Copyright (C) 2014 ISOFT INFRASTRUCTURE SOFTWARE CO., LTD. 
+ * Copyright (C) 2014 ISOFT INFRASTRUCTURE SOFTWARE CO., LTD.
  *               2014 Leslie Zhai <xiang.zhai@i-soft.com.cn>
  *                                                                              
  * This program is free software: you can redistribute it and/or modify         
@@ -16,23 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.        
  */
 
-#include <iostream>
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
+#include <sys/types.h>
+#include <regex.h>
+
 #include "webwx.h"
 
-int main(int argc, char* argv[]) 
+char *get_uuid(char *uuid) 
 {
-    std::string uuid;
-    try {
-        uuid = webwx::get_uuid();
-        std::cout << "获取uuid: " << uuid << std::endl;
-        std::cout << "获取二维码https://login.weixin.qq.com/qrcode/" + uuid + "?t=webwx" << std::endl;
-    } catch (std::string ex) {
-        std::cout << ex << std::endl;
-    }
+    if (uuid == NULL) 
+        return NULL;
 
-#if WIN32
-    system("pause");
-#endif
+    char url[BUFFER_SIZE] = {'\0'}; 
+    snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/jslogin?appid="          
+        "wx782c26e4c19acffb&redirect_uri=https://wx.qq.com/cgi-bin/mmwebwx-bin" 
+        "/webwxnewloginpage&fun=new&lang=zh_CN&_=%d", (int)time(NULL));
+    char *content = http_get(url);
+    if (content == NULL) 
+        return NULL;
 
-    return 0;
+    regex_t regex;
+    regmatch_t pmatch[1];
+    if (regcomp(&regex, "\"([^\"]*)\"", REG_EXTENDED) != 0) 
+        return NULL;
+    if (regexec(&regex, content, 1, pmatch, 0) == 0) 
+        strncpy(uuid, content + pmatch[0].rm_so + 1, pmatch[0].rm_eo - pmatch[0].rm_so - 2);
+    regfree(&regex);
+    return uuid;
+}
+
+int wait_scan(char *uuid, int timestamp) 
+{
+    int scaned = 0;
+
+    return scaned;
 }

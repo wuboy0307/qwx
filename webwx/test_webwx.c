@@ -16,20 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.        
  */
 
-#include <iostream>
-#include "http_get.h"
+#include <stdio.h>
 
-#if WIN32
-#pragma comment(lib, "curllib.lib") 
-#endif
+#include "webwx.h"
 
-int main(int argc, char* argv[]) 
+int main(int argc, char *argv[]) 
 {
-    try {
-        std::cout << webwx::http_get("https://login.weixin.qq.com/jslogin?appid=wx782c26e4c19acffb&redirect_uri=https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage&fun=new&lang=zh_CN&_=" + std::to_string(time(NULL))) << std::endl;
-    } catch (std::string ex) {
-        std::cout << ex << std::endl;
+    char uuid[BUFFER_SIZE] = {'\0'};
+    if (get_uuid(uuid) == NULL) {
+        printf("ERROR: fail to get uuid!\n");
+        return -1;
     }
+    printf("获取uuid: %s\n", uuid);
+    printf("获取二维码 https://login.weixin.qq.com/qrcode/%s?t=webwx\n", uuid);
 
 #if WIN32
     system("pause");

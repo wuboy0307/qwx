@@ -19,14 +19,17 @@
 #ifndef WEBWX_H
 #define WEBWX_H
 
-#include <string>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-namespace webwx 
-{
+#include "http_get.h"
 
-std::string get_uuid();
-bool wait_scan();
+char *get_uuid(char *uuid);
+int wait_scan();
 
+#ifdef __cplusplus
 }
+#endif
 
 #endif /* WEBWX_H */
