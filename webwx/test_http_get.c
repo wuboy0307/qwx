@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/jslogin?appid="
         "wx782c26e4c19acffb&redirect_uri=https://wx.qq.com/cgi-bin/mmwebwx-bin/"
         "webwxnewloginpage&fun=new&lang=zh_CN&_=%d", (int)time(NULL));
-    content = http_get(url);
+    content = http_get(url, 0);
     printf("%s\n", content ? content : "NULL");
     if (content) {
         free(content);

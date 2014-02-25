@@ -25,7 +25,7 @@ extern "C" {
 
 #define BUFFER_SIZE 1024
 
-char *http_get(char *url);
+char *http_get(char *url, int timeout);
 
 #ifdef __cplusplus
 }

@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <regex.h>
 
@@ -33,7 +34,7 @@ char *get_uuid(char *uuid)
     snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/jslogin?appid="          
         "wx782c26e4c19acffb&redirect_uri=https://wx.qq.com/cgi-bin/mmwebwx-bin" 
         "/webwxnewloginpage&fun=new&lang=zh_CN&_=%d", (int)time(NULL));
-    char *content = http_get(url);
+    char *content = http_get(url, 0);
     if (content == NULL) 
         return NULL;
 
@@ -44,12 +45,22 @@ char *get_uuid(char *uuid)
     if (regexec(&regex, content, 1, pmatch, 0) == 0) 
         strncpy(uuid, content + pmatch[0].rm_so + 1, pmatch[0].rm_eo - pmatch[0].rm_so - 2);
     regfree(&regex);
+    free(content);
+    content = NULL;
     return uuid;
 }
 
-int wait_scan(char *uuid, int timestamp) 
+int wait_scan(char *uuid, int timestamp, int timeout) 
 {
-    int scaned = 0;
+    char url[BUFFER_SIZE] = {'\0'};
+    snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/cgi-bin/"
+        "mmwebwx-bin/login?uuid=%s&tip=1&_=%d", uuid, timestamp);
+    char *content = http_get(url, timeout);
+    if (content == NULL) 
+        return 0;
+    printf("DEBUG: %s\n", content);
+    if (strstr(content, "200")) 
+        return 1;
 
-    return scaned;
+    return 0;
 }

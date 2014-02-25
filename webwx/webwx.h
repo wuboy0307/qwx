@@ -26,7 +26,7 @@ extern "C" {
 #include "http_get.h"
 
 char *get_uuid(char *uuid);
-int wait_scan();
+int wait_scan(char *uuid, int timestamp, int timeout);
 
 #ifdef __cplusplus
 }

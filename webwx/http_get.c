@@ -59,7 +59,7 @@ static size_t m_callback(void *ptr, size_t size, size_t nmemb, chunk_t *c)
     return size * nmemb;
 }
 
-char *http_get(char *url) 
+char *http_get(char *url, int timeout) 
 {
     CURL *curl = NULL;
     CURLcode res;
@@ -73,6 +73,7 @@ char *http_get(char *url)
         return NULL;
 
     curl_easy_setopt(curl, CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &c);

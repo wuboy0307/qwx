@@ -17,6 +17,7 @@
  */
 
 #include <stdio.h>
+#include <time.h>
 
 #include "webwx.h"
 
@@ -29,6 +30,11 @@ int main(int argc, char *argv[])
     }
     printf("获取uuid: %s\n", uuid);
     printf("获取二维码 https://login.weixin.qq.com/qrcode/%s?t=webwx\n", uuid);
+    while (1) {
+        if (wait_scan(uuid, (int)time(NULL), 3))  
+            break;
+        printf("等待扫描二维码...\n");
+    }
 
 #if WIN32
     system("pause");
