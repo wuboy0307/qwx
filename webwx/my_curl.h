@@ -23,12 +23,15 @@
 extern "C" {
 #endif
 
+#include <curl/curl.h>
+
 #define BUFFER_SIZE 1024
 
 int my_curl_init(char *url, int timeout);
 char *my_curl_get_content();
 void my_curl_cleanup();
-void my_curl_print_cookies();
+struct curl_slist *my_curl_get_cookies();
+void my_curl_set_cookies();
 
 #ifdef __cplusplus
 }

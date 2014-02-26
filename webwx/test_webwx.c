@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 {
     char uuid[BUFFER_SIZE] = {'\0'};
     char redirect_uri[BUFFER_SIZE] = {'\0'};
-    if (get_uuid(uuid, &m_uuid_callback) == NULL) {
+    if (webwx_get_uuid(uuid, &m_uuid_callback) == NULL) {
         printf("ERROR: fail to get uuid!\n");
         return -1;
     }
@@ -41,21 +41,19 @@ int main(int argc, char *argv[])
     printf("获取二维码 https://login.weixin.qq.com/qrcode/%s?t=webwx\n", uuid);
     
     while (1) {
-        if (wait_scan(uuid, (int)time(NULL), 6, redirect_uri))  
+        if (webwx_wait_scan(uuid, (int)time(NULL), 6, redirect_uri))  
             break;
         printf("等待扫描二维码...\n");
     }
 
     printf("登陆获取Cookie %s\n", redirect_uri);
-    get_cookie(redirect_uri);
+    webwx_get_cookie(redirect_uri);
 
-    get_init((int)time(NULL));
+    webwx_post_statreport((int)time(NULL));
+    
+    webwx_post_init((int)time(NULL));
 
-    get_avatar("sirtoozee");
-
-#if WIN32
-    system("pause");
-#endif
+    webwx_get_avatar("sirtoozee");
 
     return 0;
 }

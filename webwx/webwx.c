@@ -25,6 +25,8 @@
 
 #include "webwx.h"
 
+static struct curl_slist *m_cookies = NULL;
+
 static void m_get_quote(char *ori, char *dst);
 
 static void m_get_quote(char *ori, char *dst) 
@@ -38,7 +40,7 @@ static void m_get_quote(char *ori, char *dst)
     regfree(&regex);
 }
 
-char *get_uuid(char *uuid, UUID_CALLBACK fptr) 
+char *webwx_get_uuid(char *uuid, UUID_CALLBACK fptr) 
 {
     if (uuid == NULL) 
         return NULL;
@@ -65,7 +67,7 @@ char *get_uuid(char *uuid, UUID_CALLBACK fptr)
     return uuid;
 }
 
-char *wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri) 
+char *webwx_wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri) 
 {
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/cgi-bin/"
@@ -92,7 +94,7 @@ char *wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri)
     return NULL;
 }
 
-int get_cookie(char *redirect_uri) 
+int webwx_get_cookie(char *redirect_uri) 
 {
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, "%s&fun=new", redirect_uri);
@@ -109,7 +111,8 @@ int get_cookie(char *redirect_uri)
      * [4]: .qq.com TRUE    /   FALSE   1393467796  mm_lang zh_CN
      *
      */
-    my_curl_print_cookies();
+    m_cookies = my_curl_get_cookies();
+    
     my_curl_cleanup();
     if (content == NULL) 
         return -1;
@@ -122,7 +125,27 @@ int get_cookie(char *redirect_uri)
     return -1;
 }
 
-void get_init(int timestamp) 
+void webwx_post_statreport(int timestamp) 
+{
+    char url[BUFFER_SIZE] = {'\0'};
+    snprintf(url, BUFFER_SIZE, 
+        "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?type=1&r=%d", 
+        timestamp);
+#if DEBUG
+    printf("DEBUG: %s\n", url);
+#endif
+    if (my_curl_init(url, 0) != 0) 
+        return;
+    my_curl_set_cookies(m_cookies);
+    char *content = my_curl_get_content();
+    my_curl_cleanup();
+    if (content) {
+        free(content);
+        content = NULL;
+    }
+}
+
+void webwx_post_init(int timestamp) 
 {
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, 
@@ -132,6 +155,7 @@ void get_init(int timestamp)
 #endif
     if (my_curl_init(url, 0) != 0) 
         return;
+    my_curl_set_cookies(m_cookies);
     char *content = my_curl_get_content();
     my_curl_cleanup();
     if (content == NULL) 
@@ -143,7 +167,7 @@ void get_init(int timestamp)
     content = NULL;
 }
 
-void get_avatar(char *username) 
+void webwx_get_avatar(char *username) 
 {
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, "https://wx.qq.com/cgi-bin/mmwebwx-bin/"
@@ -159,4 +183,12 @@ void get_avatar(char *username)
 #endif
     free(content);
     content = NULL;
+}
+
+void webwx_cleanup() 
+{
+    if (m_cookies) {
+        curl_slist_free_all(m_cookies);
+        m_cookies = NULL;
+    }
 }

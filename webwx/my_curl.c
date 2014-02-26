@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <curl/curl.h>
 
 #include "my_curl.h"
 
@@ -99,6 +98,13 @@ char *my_curl_get_content()
 
 void my_curl_cleanup() 
 {
+    /*
+    if (m_cookies) {
+        curl_slist_free_all(m_cookies);
+        m_cookies = NULL;
+    }
+    */
+    
     if (m_curl) {
         curl_easy_cleanup(m_curl);
         curl_global_cleanup();
@@ -106,30 +112,43 @@ void my_curl_cleanup()
     }
 }
 
-void my_curl_print_cookies()                                                       
+struct curl_slist *my_curl_get_cookies()                                                       
 {                                                                               
     CURLcode res;                                                                 
-    struct curl_slist *cookies;                                                   
-    struct curl_slist *nc;                                                        
+    struct curl_slist *nc = NULL, *cookies = NULL;
     int i;                                                                        
     
     if (m_curl == NULL) 
-        return;
+        return cookies;
 
-    printf("Cookies, curl knows:\n");                                             
     res = curl_easy_getinfo(m_curl, CURLINFO_COOKIELIST, &cookies);                 
     if (res != CURLE_OK) {                                                        
-        printf("Curl curl_easy_getinfo failed: %s\n", curl_easy_strerror(res));
-        return;                                     
+        printf("ERROR: %s\n", curl_easy_strerror(res));
+        return cookies;                                     
     }                                                                             
     nc = cookies, i = 1;                                                          
     while (nc) {                                                                  
-        printf("[%d]: %s\n", i, nc->data);                                          
+        printf("DEBUG: [%d]: %s\n", i, nc->data);                                          
         nc = nc->next;                                                              
         i++;                                                                        
     }                                                                             
     if (i == 1) {                                                                 
-        printf("(none)\n");                                                         
-    }                                                                             
-    curl_slist_free_all(cookies);                                                 
+        printf("DEBUG: (none)\n");                                                         
+    }
+
+    return cookies;    
+}
+
+void my_curl_set_cookies(struct curl_slist *cookies) 
+{
+    CURLcode res;
+    struct curl_slist *nc;
+    nc = cookies;
+    while (nc) {
+        printf("DEBUG: set cookie %s\n", nc->data);
+        res = curl_easy_setopt(m_curl, CURLOPT_COOKIELIST, nc->data);
+        if (res != CURLE_OK) 
+            printf("ERROR: %s\n", curl_easy_strerror(res));
+        nc = nc->next;
+    }
 }
