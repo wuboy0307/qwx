@@ -1,5 +1,5 @@
 /*                                                                              
- * Copyright (C) 2014 ISOFT INFRASTRUCTURE SOFTWARE CO., LTD. 
+ * Copyright (C) 2014 ISOFT INFRASTRUCTURE SOFTWARE CO., LTD.
  *               2014 Leslie Zhai <xiang.zhai@i-soft.com.cn>
  *                                                                              
  * This program is free software: you can redistribute it and/or modify         
@@ -16,33 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.        
  */
 
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
+#ifndef MY_CURL_H
+#define MY_CURL_H
 
-#include "http_get.h"
-
-#if WIN32
-#pragma comment(lib, "curllib.lib") 
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-int main(int argc, char *argv[]) 
-{
-    char url[BUFFER_SIZE] = {'\0'};
-    char *content = NULL;
-    snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/jslogin?appid="
-        "wx782c26e4c19acffb&redirect_uri=https://wx.qq.com/cgi-bin/mmwebwx-bin/"
-        "webwxnewloginpage&fun=new&lang=zh_CN&_=%d", (int)time(NULL));
-    content = http_get(url, 0);
-    printf("%s\n", content ? content : "NULL");
-    if (content) {
-        free(content);
-        content = NULL;
-    }
+#define BUFFER_SIZE 1024
 
-#if WIN32
-    system("pause");
-#endif
+int my_curl_init(char *url, int timeout);
+char *my_curl_get_content();
+void my_curl_cleanup();
+void my_curl_print_cookies();
 
-    return 0;
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* MY_CURL_H */

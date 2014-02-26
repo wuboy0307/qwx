@@ -1,5 +1,5 @@
 /*                                                                              
- * Copyright (C) 2014 ISOFT INFRASTRUCTURE SOFTWARE CO., LTD.
+ * Copyright (C) 2014 ISOFT INFRASTRUCTURE SOFTWARE CO., LTD. 
  *               2014 Leslie Zhai <xiang.zhai@i-soft.com.cn>
  *                                                                              
  * This program is free software: you can redistribute it and/or modify         
@@ -16,19 +16,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.        
  */
 
-#ifndef HTTP_GET_H
-#define HTTP_GET_H
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "my_curl.h"
 
-#define BUFFER_SIZE 1024
+int main(int argc, char *argv[]) 
+{
+    char url[BUFFER_SIZE] = {'\0'};
+    char *content = NULL;
+    snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/jslogin?appid="
+        "wx782c26e4c19acffb&redirect_uri=https://wx.qq.com/cgi-bin/mmwebwx-bin/"
+        "webwxnewloginpage&fun=new&lang=zh_CN&_=%d", (int)time(NULL));
+    my_curl_init(url, 0);
+    content = my_curl_get_content();
+    printf("%s\n", content ? content : "NULL");
+    if (content) {
+        free(content);
+        content = NULL;
+    }
+    my_curl_cleanup();
 
-char *http_get(char *url, int timeout);
-
-#ifdef __cplusplus
+    return 0;
 }
-#endif
-
-#endif /* HTTP_GET_H */

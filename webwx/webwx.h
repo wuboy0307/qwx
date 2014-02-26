@@ -23,10 +23,17 @@
 extern "C" {
 #endif
 
-#include "http_get.h"
+#include "my_curl.h"
 
-char *get_uuid(char *uuid);
-int wait_scan(char *uuid, int timestamp, int timeout);
+#define DEBUG 1
+
+typedef void (*UUID_CALLBACK)(char *);
+
+char *get_uuid(char *uuid, UUID_CALLBACK fptr);
+char *wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri);
+int get_cookie(char *redirect_uri);
+void get_init(int timestamp);
+void get_avatar(char *username);
 
 #ifdef __cplusplus
 }
