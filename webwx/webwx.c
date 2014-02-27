@@ -73,7 +73,7 @@ char *webwx_wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, "https://login.weixin.qq.com/cgi-bin/"
         "mmwebwx-bin/login?uuid=%s&tip=0&_=%d", uuid, timestamp);
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", url);
 #endif
     if (my_curl_init(url, timeout) != 0) 
@@ -82,7 +82,7 @@ char *webwx_wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri
     my_curl_cleanup();
     if (content == NULL) 
         return NULL;
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", content);
 #endif
     if (strstr(content, "200")) { 
@@ -99,7 +99,7 @@ int webwx_get_cookie(char *redirect_uri)
 {
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, "%s&fun=new", redirect_uri);
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", url);
 #endif
     if (my_curl_init(url, 0) != 0) 
@@ -132,7 +132,7 @@ void webwx_post_statreport(int timestamp)
     snprintf(url, BUFFER_SIZE, 
         "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxstatreport?type=1&r=%d", 
         timestamp);
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", url);
 #endif
     if (my_curl_init(url, 0) != 0) 
@@ -151,7 +151,7 @@ void webwx_post_init(int timestamp)
     char url[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, 
         "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=%d", timestamp);
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", url);
 #endif
     if (my_curl_init(url, 0) != 0) 
@@ -161,7 +161,7 @@ void webwx_post_init(int timestamp)
     my_curl_cleanup();
     if (content == NULL) 
         return;
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", content);
 #endif
     free(content);
@@ -179,7 +179,7 @@ void webwx_get_avatar(char *username)
     my_curl_cleanup();
     if (content == NULL) 
         return;
-#if DEBUG
+#ifdef DEBUG
     printf("DEBUG: %s\n", content);
 #endif
     free(content);

@@ -143,7 +143,7 @@ struct curl_slist *my_curl_get_cookies()
     }                                                                             
     nc = cookies, i = 1;                                                          
     while (nc) {
-#if DEBUG        
+#ifdef DEBUG        
         printf("DEBUG: [%d]: %s\n", i, nc->data);
 #endif
         char domain[BUFFER_SIZE] = {'\0'};
