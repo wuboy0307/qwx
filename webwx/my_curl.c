@@ -76,8 +76,6 @@ int my_curl_init(char *url, int timeout)
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYHOST, 0L);
     curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, ""); /* just to start the cookie engine */
-    curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &m_c);
-    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, &m_callback);
 
     return 0;
 }
@@ -86,6 +84,9 @@ char *my_curl_get_content()
 {
     if (m_curl == NULL) 
         return NULL;
+
+    curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, &m_c);
+    curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, &m_callback);
 
     CURLcode res = curl_easy_perform(m_curl);
     if (res != CURLE_OK) {
@@ -96,15 +97,28 @@ char *my_curl_get_content()
     return m_c.ptr;
 }
 
+void my_curl_post_json(char *str) 
+{
+    if (m_curl) 
+        return;
+
+    struct curl_slist *headerlist = NULL;
+    char content_len[BUFFER_SIZE] = {'\0'};
+    snprintf(content_len, BUFFER_SIZE, "Content-Length: %d", (int)strlen(str));
+    headerlist = curl_slist_append(headerlist, "Content-Type: application/json");
+    headerlist = curl_slist_append(headerlist, content_len);
+
+    curl_easy_setopt(m_curl, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, str);
+    curl_easy_setopt(m_curl, CURLOPT_HTTPHEADER, headerlist);
+
+    CURLcode res = curl_easy_perform(m_curl);                                   
+    if (res != CURLE_OK) 
+        printf("ERROR: %s\n", curl_easy_strerror(res));                         
+}
+
 void my_curl_cleanup() 
 {
-    /*
-    if (m_cookies) {
-        curl_slist_free_all(m_cookies);
-        m_cookies = NULL;
-    }
-    */
-    
     if (m_curl) {
         curl_easy_cleanup(m_curl);
         curl_global_cleanup();
@@ -128,7 +142,18 @@ struct curl_slist *my_curl_get_cookies()
     }                                                                             
     nc = cookies, i = 1;                                                          
     while (nc) {                                                                  
-        printf("DEBUG: [%d]: %s\n", i, nc->data);                                          
+        printf("DEBUG: [%d]: %s\n", i, nc->data);
+        char domain[BUFFER_SIZE] = {'\0'};
+        char arg2[BUFFER_SIZE] = {'\0'};
+        char path[BUFFER_SIZE] = {'\0'};
+        char exp[BUFFER_SIZE] = {'\0'};
+        unsigned long timestamp = 0;
+        char key[BUFFER_SIZE] = {'\0'};
+        char val[BUFFER_SIZE] = {'\0'};
+        sscanf(nc->data, "%s\t%s\t%s\t%s\t%lu\t%s\t%s", 
+            domain, arg2, path, exp, &timestamp, key, val);
+        printf("DEBUG: %s %s %s %s %lu %s %s\n", 
+            domain, arg2, path, exp, timestamp, key, val);
         nc = nc->next;                                                              
         i++;                                                                        
     }                                                                             

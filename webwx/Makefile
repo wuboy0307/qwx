@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-g -O2 -Wall -fPIC
 CPPPATH=
 LIBPATH=
-LIBS=-lcurl
+LIBS=-lcurl -lpthread
 
 all: test_my_curl test_webwx
 

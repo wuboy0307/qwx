@@ -18,14 +18,32 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 #include "webwx.h"
 
 static void m_uuid_callback(char *uuid);
+static void m_open_url(char *uuid);
+static void *m_open_url_callback(void *arg);
 
 static void m_uuid_callback(char *uuid) 
 {
     printf("DEBUG: %s %s\n", __func__, uuid);
+}
+
+static void *m_open_url_callback(void *arg) 
+{
+    system((char *)arg);
+    return NULL;
+}
+
+static void m_open_url(char *uuid) 
+{
+    pthread_t tid;
+    char cmd[BUFFER_SIZE] = {'\0'};
+    snprintf(cmd, BUFFER_SIZE, "chromium https://login.weixin.qq.com/qrcode/%s?t=webwx", uuid);
+    pthread_create(&tid, NULL, m_open_url_callback, cmd);
 }
 
 int main(int argc, char *argv[]) 
@@ -39,7 +57,8 @@ int main(int argc, char *argv[])
     printf("获取uuid: %s\n", uuid);
     
     printf("获取二维码 https://login.weixin.qq.com/qrcode/%s?t=webwx\n", uuid);
-    
+    m_open_url(uuid);
+
     while (1) {
         if (webwx_wait_scan(uuid, (int)time(NULL), 6, redirect_uri))  
             break;
