@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <regex.h>
 
+#include "config.h"
 #include "webwx.h"
 
 static struct curl_slist *m_cookies = NULL;

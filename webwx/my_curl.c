@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "config.h"
 #include "my_curl.h"
 
 typedef struct {
@@ -141,8 +142,10 @@ struct curl_slist *my_curl_get_cookies()
         return cookies;                                     
     }                                                                             
     nc = cookies, i = 1;                                                          
-    while (nc) {                                                                  
+    while (nc) {
+#if DEBUG        
         printf("DEBUG: [%d]: %s\n", i, nc->data);
+#endif
         char domain[BUFFER_SIZE] = {'\0'};
         char arg2[BUFFER_SIZE] = {'\0'};
         char path[BUFFER_SIZE] = {'\0'};

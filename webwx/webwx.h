@@ -25,8 +25,6 @@ extern "C" {
 
 #include "my_curl.h"
 
-#define DEBUG 1
-
 typedef void (*UUID_CALLBACK)(char *);
 
 char *webwx_get_uuid(char *uuid, UUID_CALLBACK fptr);
