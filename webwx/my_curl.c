@@ -127,7 +127,7 @@ void my_curl_cleanup()
     }
 }
 
-struct curl_slist *my_curl_get_cookies()                                                       
+struct curl_slist *my_curl_get_cookies(char *uin, char *sid) 
 {                                                                               
     CURLcode res;                                                                 
     struct curl_slist *nc = NULL, *cookies = NULL;
@@ -155,13 +155,21 @@ struct curl_slist *my_curl_get_cookies()
         char val[BUFFER_SIZE] = {'\0'};
         sscanf(nc->data, "%s\t%s\t%s\t%s\t%lu\t%s\t%s", 
             domain, arg2, path, exp, &timestamp, key, val);
+        if (strcmp(key, "wxuin") == 0) 
+            strncpy(uin, val, BUFFER_SIZE);
+        if (strcmp(key, "wxsid") == 0) 
+            strncpy(sid, val, BUFFER_SIZE);
+#ifdef DEBUG
         printf("DEBUG: %s %s %s %s %lu %s %s\n", 
             domain, arg2, path, exp, timestamp, key, val);
+#endif
         nc = nc->next;                                                              
         i++;                                                                        
     }                                                                             
     if (i == 1) {                                                                 
-        printf("DEBUG: (none)\n");                                                         
+#ifdef DEBUG
+        printf("DEBUG: (none)\n");            
+#endif        
     }
 
     return cookies;    

@@ -98,6 +98,8 @@ char *webwx_wait_scan(char *uuid, int timestamp, int timeout, char *redirect_uri
 int webwx_get_cookie(char *redirect_uri) 
 {
     char url[BUFFER_SIZE] = {'\0'};
+    char uin[BUFFER_SIZE] = {'\0'};
+    char sid[BUFFER_SIZE] = {'\0'};
     snprintf(url, BUFFER_SIZE, "%s&fun=new", redirect_uri);
 #ifdef DEBUG
     printf("DEBUG: %s\n", url);
@@ -112,7 +114,10 @@ int webwx_get_cookie(char *redirect_uri)
      * [4]: .qq.com TRUE    /   FALSE   1393467796  mm_lang zh_CN
      *
      */
-    m_cookies = my_curl_get_cookies();
+    m_cookies = my_curl_get_cookies(uin, sid);
+#ifdef DEBUG
+    printf("DEBUG: uid: %s sid: %s\n", uin, sid);
+#endif
     
     my_curl_cleanup();
     if (content == NULL) 

@@ -30,7 +30,8 @@ extern "C" {
 int my_curl_init(char *url, int timeout);
 char *my_curl_get_content();
 void my_curl_cleanup();
-struct curl_slist *my_curl_get_cookies();
+void my_curl_post_json(char *str);
+struct curl_slist *my_curl_get_cookies(char *uin, char *sid);
 void my_curl_set_cookies();
 
 #ifdef __cplusplus
